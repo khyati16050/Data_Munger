@@ -18,14 +18,19 @@ public class CsvQueryProcessor implements QueryProcessingEngine {
 	 * This method will take QueryParameter object as a parameter which contains the
 	 * parsed query and will process and populate the ResultSet
 	 */
-	public DataSet getResultSet(QueryParameter queryParameter) throws IOException, ParseException {
+	public DataSet getResultSet(QueryParameter queryParameter)  {
 
 		/*
 		 * initialize BufferedReader to read from the file which is mentioned in
 		 * QueryParameter. Consider Handling Exception related to file reading.
 		 */
 		String fileName = queryParameter.getFileName();
-		FileReader fileReader = new FileReader("data/ipl.csv");
+		FileReader fileReader = null;
+		try {
+			fileReader = new FileReader(fileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 
 		/*
@@ -42,7 +47,12 @@ public class CsvQueryProcessor implements QueryProcessingEngine {
 		 * that ipl.csv file contains null value in the last column. If you do not
 		 * consider this while splitting, this might cause exceptions later
 		 */
-		String line = bufferedReader.readLine();
+		String line = null;
+		try {
+			line = bufferedReader.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		//String[] firstLine = line.split(","); //to determine data type
 
 		/*
@@ -59,7 +69,11 @@ public class CsvQueryProcessor implements QueryProcessingEngine {
 		 * getDataType() method of DataTypeDefinitions class
 		 */
 		RowDataTypeDefinitions rowDataTypeDefinitions = new RowDataTypeDefinitions(fileName);
-		rowDataTypeDefinitions.setRowDataTypeMap(line);
+		try {
+			rowDataTypeDefinitions.setRowDataTypeMap(line);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		/*
 		 * once we have the header and dataTypeDefinitions maps populated, we can start
@@ -106,103 +120,93 @@ BufferedReader buff = new BufferedReader(fileReader);
 		long rowNum = 0;
 		DataTypeDefinitions dataTypeDefinitions = new DataTypeDefinitions();
 		Filter filter = new Filter();
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		String fileLine;
-		while((fileLine = br.readLine()) != null)
-		{
-			if(rowNum!=0)
-			{
-				Row row = new Row(fileName,fileLine);
-				boolean finalCheck = true;
-				String[] fields = fileLine.split(",");
-				int size = fields.length;
-				String[] lineFields = new String[size];
-				for(int i=0;i<size;i++)
-				{
-					if(fields[i]!=null)
-					lineFields[i] = fields[i].trim();
-				}
-
-				if(restrictions!= null)
-				{
-					List<Boolean> logicalCheck = new ArrayList<>();
-					for(Restriction restriction : restrictions)
-					{
-						boolean flag = compareWhere(restriction,header,lineFields,dataTypeDefinitions,filter);
-						logicalCheck.add(flag);
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			String fileLine;
+			while ((fileLine = br.readLine()) != null) {
+				if (rowNum != 0) {
+					Row row = new Row(fileName, fileLine);
+					boolean finalCheck = true;
+					String[] fields = fileLine.split(",");
+					int size = fields.length;
+					String[] lineFields = new String[size];
+					for (int i = 0; i < size; i++) {
+						if (fields[i] != null)
+							lineFields[i] = fields[i].trim();
 					}
-					if(logicalCheck.size()==1)
-					{
-						if(logicalCheck.get(0)==false)
-						{
-							finalCheck = false;
-						}
-					}
-					else
-					{
-						List<String> operator = queryParameter.getLogicalOperators();
-						if(operator!=null)
-						{
-							int operatorSize = operator.size();
-							if(operatorSize<2)
-							{
-								for(int i=0;i<operatorSize;i++)
-								{
-									Boolean logicOne = logicalCheck.get(i);
-									Boolean logicTwo = logicalCheck.get(i+1);
-									if(operator.get(i).equals("and"))
-									{
-										if(logicOne==false || logicTwo==false)
-											finalCheck = false;
-									}
-									else if(operator.get(i).equals("or"))
-									{
-										if(logicOne==false && logicTwo==false)
-											finalCheck = false;
-									}
-								}
 
+					if (restrictions != null) {
+						List<Boolean> logicalCheck = new ArrayList<>();
+						for (Restriction restriction : restrictions) {
+							boolean flag = false;
+							try {
+								flag = compareWhere(restriction, header, lineFields, dataTypeDefinitions, filter);
+							} catch (ParseException e) {
+								e.printStackTrace();
 							}
-							else
-							{
-								Boolean flag = true;
-								Boolean logicOne = logicalCheck.get(0);
-								Boolean logicTwo = logicalCheck.get(1);
-								for(int i=0;i<operatorSize-1;i++)
-								{
-									if(operator.get(i).equals("and"))
-									{
-										if(logicOne==false || logicTwo==false)
-											flag = false;
+							logicalCheck.add(flag);
+						}
+						if (logicalCheck.size() == 1) {
+							if (logicalCheck.get(0) == false) {
+								finalCheck = false;
+							}
+						} else {
+							List<String> operator = queryParameter.getLogicalOperators();
+							if (operator != null) {
+								int operatorSize = operator.size();
+								if (operatorSize < 2) {
+									for (int i = 0; i < operatorSize; i++) {
+										Boolean logicOne = logicalCheck.get(i);
+										Boolean logicTwo = logicalCheck.get(i + 1);
+										if (operator.get(i).equals("and")) {
+											if (logicOne == false || logicTwo == false)
+												finalCheck = false;
+										} else if (operator.get(i).equals("or")) {
+											if (logicOne == false && logicTwo == false)
+												finalCheck = false;
+										}
 									}
-									else if(operator.get(i).equals("or"))
-									{
-										if(logicOne==false && logicTwo==false)
-											flag = false;
+
+								} else {
+									Boolean flag = true;
+									Boolean logicOne = logicalCheck.get(0);
+									Boolean logicTwo = logicalCheck.get(1);
+									for (int i = 0; i < operatorSize - 1; i++) {
+										if (operator.get(i).equals("and")) {
+											if (logicOne == false || logicTwo == false)
+												flag = false;
+										} else if (operator.get(i).equals("or")) {
+											if (logicOne == false && logicTwo == false)
+												flag = false;
+										}
+										logicOne = flag;
+										logicTwo = logicalCheck.get(i + 2);
+
 									}
-									logicOne = flag;
-									logicTwo = logicalCheck.get(i+2);
+
 
 								}
-
-
-
-
 							}
 						}
 					}
-				}
 
-				if(finalCheck)
-				{
-					dataSet.put(rowNum,row);
-				}
+					if (finalCheck) {
+						dataSet.put(rowNum, row);
+					}
 
+				}
+				rowNum++;
 			}
-			rowNum++;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		List<String> fields = queryParameter.getFields();
-		String[] headers = header.getheader();
+		String[] headers = new String[0];
+		try {
+			headers = header.getheader();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		DataSet resultSet = displayFields(dataSet,fields,headers);
 
 

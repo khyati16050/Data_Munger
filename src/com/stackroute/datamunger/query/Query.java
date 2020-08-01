@@ -38,14 +38,7 @@ public class Query {
 		 * or group by clause
 		 */
 		CsvQueryProcessor csvQueryProcessor = new CsvQueryProcessor();
-		try {
-			return csvQueryProcessor.getResultSet(queryParameter);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-return null;
+		return csvQueryProcessor.getResultSet(queryParameter);
 		/*
 		 * call the getResultSet() method of CsvQueryProcessor class by passing the
 		 * QueryParameter Object to it. This method is supposed to return resultSet
