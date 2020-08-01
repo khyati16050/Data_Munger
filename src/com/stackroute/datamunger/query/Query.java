@@ -20,7 +20,7 @@ public class Query {
 	 * multiple conditions
 	 */
 	@SuppressWarnings("rawtypes")
-	public HashMap executeQuery(String queryString) throws IOException, ParseException {
+	public HashMap executeQuery(String queryString)  {
 	
 		/* instantiate QueryParser class */
 		QueryParser queryParser = new QueryParser();
@@ -38,8 +38,14 @@ public class Query {
 		 * or group by clause
 		 */
 		CsvQueryProcessor csvQueryProcessor = new CsvQueryProcessor();
-		return csvQueryProcessor.getResultSet(queryParameter);
-		
+		try {
+			return csvQueryProcessor.getResultSet(queryParameter);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+return null;
 		/*
 		 * call the getResultSet() method of CsvQueryProcessor class by passing the
 		 * QueryParameter Object to it. This method is supposed to return resultSet
