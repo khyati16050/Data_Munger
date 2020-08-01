@@ -1,5 +1,11 @@
 package com.stackroute.datamunger.query;
 
+import com.stackroute.datamunger.query.parser.QueryParameter;
+import com.stackroute.datamunger.query.parser.QueryParser;
+import com.stackroute.datamunger.reader.CsvQueryProcessor;
+
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 
 public class Query {
@@ -14,15 +20,16 @@ public class Query {
 	 * multiple conditions
 	 */
 	@SuppressWarnings("rawtypes")
-	public HashMap executeQuery(String queryString) {
+	public HashMap executeQuery(String queryString) throws IOException, ParseException {
 	
 		/* instantiate QueryParser class */
-		
+		QueryParser queryParser = new QueryParser();
+
 		/*
 		 * call parseQuery() method of the class by passing the queryString which will
 		 * return object of QueryParameter
 		 */
-		
+		QueryParameter queryParameter = queryParser.parseQuery(queryString);
 		
 		/*
 		 * Check for Type of Query based on the QueryParameter object. In this
@@ -30,7 +37,8 @@ public class Query {
 		 * where conditions i.e. conditions without aggregate functions, order by clause
 		 * or group by clause
 		 */
-		
+		CsvQueryProcessor csvQueryProcessor = new CsvQueryProcessor();
+		return csvQueryProcessor.getResultSet(queryParameter);
 		
 		/*
 		 * call the getResultSet() method of CsvQueryProcessor class by passing the
@@ -40,7 +48,7 @@ public class Query {
 		
 		
 	
-		return null;
+		//return null;
 	}
 
 }

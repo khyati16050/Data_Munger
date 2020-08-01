@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -530,12 +532,13 @@ public class DataMungerTest {
 	 */
 
 	@Test
-	public void testSelectAllWithoutWhereClause() throws FileNotFoundException {
+	public void testSelectAllWithoutWhereClause() throws IOException, ParseException {
 		int totalrecordsexpected = 577;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
 
 		HashMap dataSet = query.executeQuery("select * from data/ipl.csv");
+
 
 		Set map = dataSet.entrySet();
 		Iterator itr = map.iterator();
@@ -580,7 +583,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testSelectColumnsWithoutWhereClause() throws FileNotFoundException {
+	public void testSelectColumnsWithoutWhereClause() throws IOException, ParseException {
 		int totalrecordsexpected = 577;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -597,15 +600,18 @@ public class DataMungerTest {
 						"1={winner=Kolkata Knight Riders, city=Bangalore, team1=Kolkata Knight Riders, team2=Royal Challengers Bangalore}")) {
 					counter++;
 				}
+
 			} else if (recordscounter == 289) {
 				if (itr.next().toString().contains(
 						"289={winner=Deccan Chargers, city=Cuttack, team1=Deccan Chargers, team2=Pune Warriors}")) {
 					counter++;
+
 				}
 			} else if (recordscounter == 577) {
 				if (itr.next().toString().contains(
 						"577={winner=Sunrisers Hyderabad, city=Bangalore, team1=Sunrisers Hyderabad, team2=Royal Challengers Bangalore}")) {
 					counter++;
+
 				}
 			} else {
 				itr.next();
@@ -628,7 +634,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereGreaterThanClause() throws FileNotFoundException {
+	public void testWithWhereGreaterThanClause() throws IOException, ParseException {
 		int totalrecordsexpected = 60;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -679,7 +685,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereLessThanClause() throws FileNotFoundException {
+	public void testWithWhereLessThanClause() throws IOException, ParseException {
 		int totalrecordsexpected = 458;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -729,7 +735,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereLessThanOrEqualToClause() throws FileNotFoundException {
+	public void testWithWhereLessThanOrEqualToClause() throws IOException, ParseException {
 		int totalrecordsexpected = 517;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -779,7 +785,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereGreaterThanOrEqualToClause() throws FileNotFoundException {
+	public void testWithWhereGreaterThanOrEqualToClause() throws IOException, ParseException {
 		int totalrecordsexpected = 119;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -829,7 +835,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereNotEqualToClause() throws FileNotFoundException {
+	public void testWithWhereNotEqualToClause() throws IOException, ParseException {
 
 		int totalrecordsexpected = 315;
 		int recordscounter = 1;
@@ -881,7 +887,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereEqualAndNotEqualClause() throws FileNotFoundException {
+	public void testWithWhereEqualAndNotEqualClause() throws IOException, ParseException {
 		int totalrecordsexpected = 195;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -931,7 +937,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereTwoConditionsEqualOrNotEqualClause() throws FileNotFoundException {
+	public void testWithWhereTwoConditionsEqualOrNotEqualClause() throws IOException, ParseException {
 		int totalrecordsexpected = 155;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
@@ -982,7 +988,7 @@ public class DataMungerTest {
 	}
 
 	@Test
-	public void testWithWhereThreeConditionsEqualOrNotEqualClause() throws FileNotFoundException {
+	public void testWithWhereThreeConditionsEqualOrNotEqualClause() throws IOException, ParseException {
 		int totalrecordsexpected = 577;
 		int recordscounter = 1;
 		boolean dataexpectedstatus = false;
